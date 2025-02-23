@@ -4,10 +4,7 @@
  */
 package mountainenjoyer.Model;
 
-/**
- *
- * @author lucas
- */
+
 /**
  * Represents the player character in the game.
  * Handles player movement, interactions, and state management.

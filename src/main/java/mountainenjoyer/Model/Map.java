@@ -5,9 +5,19 @@
 package mountainenjoyer.Model;
 
 /**
- *
+ * This class makes up the environment the user interacts with
+ * including platform arrangement and view port.
  * @author lucas
  */
 public class Map {
     
+    public double platformPosX, platformPosY;
+    
+    /**
+     * Determines the playable view of the map.
+     */
+    public void viewport()
+    {
+        
+    }
 }
