@@ -10,31 +10,56 @@ package mountainenjoyer.Model;
  */
 public class Platform {
     
-    public double platPosX, platPosY;
-    public double platWidth, platHeight;
+    private double platPosX, platPosY;
+    private double platWidth, platHeight;
+    private PlatformType platType;
+    private PlatformState platState;
     
+    /**
+     * Types of platforms available.
+     * NORMAL is a regular, immovable platform.
+     * BREAKABLE is a platform that will break after the player jumps on it.
+     */
     public enum PlatformType {
         NORMAL,
         BREAKABLE
     }
+    
+    /**
+     * States of platforms available.
+     * SOLID is a platform that can be jumped on and does not change state.
+     * BROKEN is a transparent platform that can be jumped and fallen through.
+     */
     public enum PlatformState {
         SOLID,
         BROKEN
     }
     
     /**
-     * Draws a platform with the given specifications.
-     * @param type the type of platform it is.
-     * @param state the state the platform is in.
-     * @param platPosX the X position of the platform.
-     * @param platPosY the Y position of the platform.
-     * @param platWidth the width of the platform.
-     * @param platHeight the height of the platform.
+     * Constructor for platform.
+     * @param platType Type of the platform
+     * @param platState State of the platform
+     * @param platPosX X position of the platform
+     * @param platPosY Y position of the platform
+     * @param platWidth Width of the platform
+     * @param platHeight Height of the platform
      */
-    public void drawPlatform(PlatformType type, PlatformState state, 
+    public Platform(PlatformType platType, PlatformState platState, 
             double platPosX, double platPosY, double platWidth, 
             double platHeight)
+    { 
+        this.platPosX = platPosX;
+        this.platPosY = platPosY;
+        this.platWidth = platWidth;
+        this.platHeight = platHeight;
+        this.platType = platType;
+        this.platState = platState;
+    }
+    
+    /**
+     * Draws a platform with the given specifications.
+     */
+    public void drawPlatform()
     {
-        
     }
 }
