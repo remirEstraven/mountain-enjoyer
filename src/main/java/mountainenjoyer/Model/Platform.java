@@ -10,17 +10,31 @@ package mountainenjoyer.Model;
  */
 public class Platform {
     
-    /**
-     * Determines the type of platform that is being used (ex: breakable, normal, etc)
-     */
-    public void PlatformType() {
+    public double platPosX, platPosY;
+    public double platWidth, platHeight;
     
+    public enum PlatformType {
+        NORMAL,
+        BREAKABLE
+    }
+    public enum PlatformState {
+        SOLID,
+        BROKEN
     }
     
     /**
-     * Determines if the platform is usable by the player
+     * Draws a platform with the given specifications.
+     * @param type the type of platform it is.
+     * @param state the state the platform is in.
+     * @param platPosX the X position of the platform.
+     * @param platPosY the Y position of the platform.
+     * @param platWidth the width of the platform.
+     * @param platHeight the height of the platform.
      */
-    public void PlatformState() {
-    
+    public void drawPlatform(PlatformType type, PlatformState state, 
+            double platPosX, double platPosY, double platWidth, 
+            double platHeight)
+    {
+        
     }
 }

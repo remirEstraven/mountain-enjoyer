@@ -5,16 +5,19 @@
 package mountainenjoyer.Model;
 
 /**
- * This interface is the base that level classes will implement to make up
- * the playable area.
+ * The first level of the game. Draws out the playable area by implementing
+ * map interface.
  * @author lucas
  */
-public interface Map {
+public class Level1 implements Map {
     
     /**
      * Draws the playable area.
-     * @param mapHeight Height of the playable area.
-     * @param mapWidth Width of the playable area.
+     * @param mapHeight Height of playable area.
+     * @param mapWidth Width of playable area.
      */
-    public void drawMap(int mapHeight, int mapWidth);
+    @Override public void drawMap(int mapHeight, int mapWidth)
+    {
+        
+    }
 }
