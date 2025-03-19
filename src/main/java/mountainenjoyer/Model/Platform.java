@@ -5,19 +5,21 @@
 package mountainenjoyer.Model;
 
 /**
- * This class handles the platforms the player jumps on
- * Determines which kind of platform it is
+ * This class handles the platforms the player jumps on, including the type,
+ * state, size, and where it is located on the level.
+ * Create an instance of this class in a level class to generate a platform in
+ * the level.
  */
 public class Platform {
     
-    private double platPosX, platPosY;
-    private double platWidth, platHeight;
+    private int platPosX, platPosY;
+    private int platWidth, platHeight;
     private PlatformType platType;
     private PlatformState platState;
     
     /**
      * Types of platforms available.
-     * NORMAL is a regular, immovable platform.
+     * NORMAL is a regular, immovable platform that the player can jump on.
      * BREAKABLE is a platform that will break after the player jumps on it.
      */
     public enum PlatformType {
@@ -27,8 +29,9 @@ public class Platform {
     
     /**
      * States of platforms available.
-     * SOLID is a platform that can be jumped on and does not change state.
-     * BROKEN is a transparent platform that can be jumped and fallen through.
+     * SOLID is a platform that can be jumped on.
+     * BROKEN is a transparent platform that the player will fall through and
+     * cannot jump on.
      */
     public enum PlatformState {
         SOLID,
@@ -38,28 +41,90 @@ public class Platform {
     /**
      * Constructor for platform.
      * @param platType Type of the platform
-     * @param platState State of the platform
      * @param platPosX X position of the platform
      * @param platPosY Y position of the platform
      * @param platWidth Width of the platform
      * @param platHeight Height of the platform
      */
-    public Platform(PlatformType platType, PlatformState platState, 
-            double platPosX, double platPosY, double platWidth, 
-            double platHeight)
+    public Platform(PlatformType platType, int platPosX, int platPosY, 
+            int platWidth, int platHeight)
     { 
         this.platPosX = platPosX;
         this.platPosY = platPosY;
         this.platWidth = platWidth;
         this.platHeight = platHeight;
         this.platType = platType;
-        this.platState = platState;
     }
     
     /**
-     * Draws a platform with the given specifications.
+     * Returns the platform's X position.
+     * @return platPoxX
      */
-    public void drawPlatform()
+    public int getPlatPosX()
     {
+        return platPosX;
+    }
+    
+    /**
+     * Returns the platform's Y position.
+     * @return platPoxY
+     */
+    public int getPlatPosY()
+    {
+        return platPosY;
+    }
+    
+    /**
+     * Returns the platform's width.
+     * @return platWidth
+     */
+    public int getPlatWidth()
+    {
+        return platWidth;
+    }
+    
+    /**
+     * Returns the platform's height.
+     * @return platHeight
+     */
+    public int getPlatHeight()
+    {
+        return platHeight;
+    }
+    
+    /**
+     * Returns the platform's type.
+     * @return platType
+     */
+    public PlatformType getPlatType()
+    {
+        return platType;
+    }
+    
+    /**
+     * Returns the platform's state.
+     * @return platState
+     */
+    public PlatformState getPlatState()
+    {
+        return platState;
+    }
+    
+    /**
+     * Changes the platforms state to broken for 3 seconds if breakable.
+     */
+    public void breakPlatform()
+    {
+        if(platType == PlatformType.BREAKABLE)
+        {
+            platState = PlatformState.BROKEN;
+            try {
+                Thread.sleep(3000);
+                platState = PlatformState.SOLID;
+            } catch (InterruptedException e) {
+                platState = PlatformState.SOLID;
+                System.out.println("Interrupted");
+            }
+        }
     }
 }
