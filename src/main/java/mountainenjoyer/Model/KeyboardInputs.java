@@ -15,7 +15,9 @@ public class KeyboardInputs implements KeyListener {
     * @param e the event to be processed
     */
     @Override
-    public void keyPressed(KeyEvent e){}
+    public void keyPressed(KeyEvent e) {
+        
+    }
 
     /**
     * Invoked when a key has been released.
@@ -23,7 +25,9 @@ public class KeyboardInputs implements KeyListener {
     * @param e the event to be processed
     */
     @Override
-    public void keyReleased(KeyEvent e){}
+    public void keyReleased(KeyEvent e) {
+        
+    }
 
     /**
     * Invoked when a key has been typed.
@@ -31,5 +35,7 @@ public class KeyboardInputs implements KeyListener {
     * @param e the event to be processed
     */
     @Override
-    public void keyTyped(KeyEvent e){}
+    public void keyTyped(KeyEvent e) {
+        
+    }
 }
