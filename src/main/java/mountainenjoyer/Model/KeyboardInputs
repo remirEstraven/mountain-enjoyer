@@ -1,1 +1,29 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package mountainenjoyer.Model;
 
+public KeyboardInputs implements KeyListener {
+    
+    /**
+    * Invoked when a key has been pressed.
+    * 
+    * @param e
+    */
+    keyPressed(KeyEvent e);
+
+    /**
+    * Invoked when a key has been released.
+    *
+    * @param e
+    */
+    keyReleased(KeyEvent e);
+
+    /**
+    * Invoked when a key has been typed.
+    *
+    * @param e
+    */
+    keyTyped(KeyEvent e);
+}
