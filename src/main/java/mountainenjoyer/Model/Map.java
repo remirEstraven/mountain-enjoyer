@@ -16,5 +16,5 @@ public interface Map {
      * @param mapHeight Height of the playable area.
      * @param mapWidth Width of the playable area.
      */
-    public void drawMap(int mapHeight, int mapWidth);
+    public void assembleLevel(int mapHeight);
 }

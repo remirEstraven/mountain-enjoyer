@@ -14,10 +14,9 @@ public class Level1 implements Map {
     /**
      * Draws the playable area.
      * @param mapHeight Height of playable area.
-     * @param mapWidth Width of playable area.
      */
     @Override
-    public void drawMap(int mapHeight, int mapWidth)
+    public void assembleLevel(int mapHeight)
     {
         
     }
