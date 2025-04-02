@@ -3,13 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package mountainenjoyer.Model;
+package mountainenjoyer.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashSet;
 
-public class Level1 extends JPanel implements Map, ActionListener, KeyListener
+public class Game extends JPanel implements ActionListener
 {
     
     // Timer for the game loop (updates every 15 ms)
@@ -20,20 +21,25 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener
     private int playerY = 500;
     private final int playerWidth = 30;
     private final int playerHeight = 50;
-    private int velY = 0;        // vertical velocity (for jumping / gravity)
-    private boolean jumping = false;
-    
-    // Flags for continuous left/right movement.
-    private boolean leftPressed = false;
-    private boolean rightPressed = false;
     
     // Constants for physics and movement.
     private final int GRAVITY = 1;
     private final int HORIZONTAL_SPEED = 5;
-    private final int JUMP_STRENGTH = -15;
+    
+    // Keyboard Inputs
+    KeyboardInputs keyInputs = new KeyboardInputs();
+    
     
     // Platforms for the level: these values determine their positions and sizes.
-    private Rectangle[] platforms = {
+    private Rectangle[] platformsLvl1 = {
+        new Rectangle(0, 550, 800, 50),    // Ground platform spanning window width
+        new Rectangle(100, 500, 150, 20),
+        new Rectangle(350, 400, 200, 20),
+        new Rectangle(600, 400, 150, 20)
+    };
+    
+    // Platforms for the second level
+    private Rectangle[] platformsLvl2 = {
         new Rectangle(0, 550, 800, 50),    // Ground platform spanning window width
         new Rectangle(100, 500, 150, 20),
         new Rectangle(350, 400, 200, 20),
@@ -41,12 +47,12 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener
     };
     
     // Constructor: sets up the timer and key listener
-    public Level1()
+    public Game()
     {
         timer = new Timer(15, this);
         timer.start();
         setFocusable(true);
-        addKeyListener(this);
+        addKeyListener(keyInputs);
     }
     
     /**
@@ -55,10 +61,9 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener
      * @param mapHeight Height of the playable area.
      * @param mapWidth  Width of the playable area.
      */
-    @Override
     public void drawMap(int mapHeight, int mapWidth)
     {
-        JFrame gameFrame = new JFrame("Level 1");
+        JFrame gameFrame = new JFrame("Game");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(mapWidth, mapHeight);
         gameFrame.add(this);
@@ -78,9 +83,11 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener
         g.setColor(Color.BLUE);
         g.fillRect(playerX, playerY, playerWidth, playerHeight);
         
+        // TODO: Make it so what rectangle array is used here depends on 
+        //       which level the player is on
         // Draw the platforms as red rectangles
         g.setColor(Color.RED);
-        for (Rectangle platform : platforms)
+        for (Rectangle platform : platformsLvl1)
         {
             g.fillRect(platform.x, platform.y, platform.width, platform.height);
         }
@@ -91,11 +98,11 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener
     public void actionPerformed(ActionEvent e)
     {
         // Update horizontal movement continuously based on key flags.
-        if (leftPressed)
+        if (keyInputs.getLeftPressed())
         {
             playerX -= HORIZONTAL_SPEED;
         }
-        if (rightPressed)
+        if (keyInputs.getRightPressed())
         {
             playerX += HORIZONTAL_SPEED;
         }
@@ -103,67 +110,31 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener
         // Apply simple gravity and collision detection.
         boolean onPlatform = false;
         Rectangle playerRect = new Rectangle(playerX, playerY, playerWidth, playerHeight);
-        for (Rectangle platform : platforms)
+        for (Rectangle platform : platformsLvl1)
         {
             if (playerRect.intersects(platform))
             {
                 // Check if the collision comes from above (to ensure proper landing)
-                if (playerY + playerHeight - velY <= platform.y)
+                if (playerY + playerHeight - keyInputs.getVelY() <= platform.y)
                 {
                     playerY = platform.y - playerHeight;
-                    velY = 0;
-                    jumping = false;
+                    keyInputs.setVelY(0);
+                    keyInputs.setJumping(false);
                     onPlatform = true;
                 }
+                // TODO: Make it so player can't overlap with platforms
             }
         }
+        
+        // TODO: Make it so player can't leave side of screen
         
         // If the player is not on a platform, apply gravity.
         if (!onPlatform)
         {
-            velY += GRAVITY;
+            keyInputs.setVelY(keyInputs.getVelY() + GRAVITY);
         }
-        playerY += velY;
+        playerY += keyInputs.getVelY();
         
         repaint();
     }
-    
-    // When a key is pressed, update the flags accordingly.
-    @Override
-    public void keyPressed(KeyEvent e)
-    {
-        int key = e.getKeyCode();
-        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)
-        {
-            leftPressed = true;
-        }
-        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D)
-        {
-            rightPressed = true;
-        }
-        // Jumping: allow a jump if not already in the air.
-        if (key == KeyEvent.VK_SPACE && !jumping)
-        {
-            jumping = true;
-            velY = JUMP_STRENGTH;
-        }
-    }
-    
-    // When a key is released, update the flags to stop continuous movement.
-    @Override
-    public void keyReleased(KeyEvent e)
-    {
-        int key = e.getKeyCode();
-        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)
-        {
-            leftPressed = false;
-        }
-        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D)
-        {
-            rightPressed = false;
-        }
-    }
-    
-    @Override
-    public void keyTyped(KeyEvent e) { }
 }
