@@ -1,10 +1,16 @@
 
-package mountainenjoyer.Model;
+package mountainenjoyer.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
+/**
+ * Menu class to construct and show the starting menu of the game.
+ * Closes the menu and opens the game once play button is pressed.
+ * Also shows previous users high scores.
+ */
 public class Menu {
 
     public static void showMenu()
@@ -33,11 +39,14 @@ public class Menu {
         // Center image panel
         JPanel imagePanel = new JPanel();
         imagePanel.setLayout(new BorderLayout());
-        String imagePath = "images/mountain.png";  // Adjust the path as necessary.
-        ImageIcon imageIcon = new ImageIcon(Menu.class.getResource("/" + imagePath));
+        File imagePath = new File("src/main/resources/mountain.png");
+        ImageIcon imageIcon = new ImageIcon(imagePath.getPath());
+        System.out.println(imagePath.getAbsolutePath());
         JLabel imageLabel = new JLabel(imageIcon);
         imagePanel.add(imageLabel, BorderLayout.CENTER);
         panel.add(imagePanel, BorderLayout.CENTER);
+        
+        // TODO: Show High Score table
 
         // Bottom button panel
         JPanel buttonPanel = new JPanel();
@@ -47,10 +56,11 @@ public class Menu {
         JButton playButton = new JButton("Play");
         playButton.addActionListener(new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 frame.dispose();  // Close the menu.
-                Level1 level = new Level1();
+                Game level = new Game();
                 // You can adjust the size of the playable area (height, width) as desired.
                 level.drawMap(600, 800);
             }
@@ -61,6 +71,7 @@ public class Menu {
         JButton quitButton = new JButton("Quit");
         quitButton.addActionListener(new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 System.exit(0);

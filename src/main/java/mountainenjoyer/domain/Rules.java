@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package mountainenjoyer.Model;
+package mountainenjoyer.domain;
 
 /**
- * A class for determining score and controlling the state of play the user is in.
+ * Calculates and manages high score and countdown, and handles 
+ * win/loss conditions.
  * @author lucas
  */
 public class Rules {
@@ -14,9 +15,9 @@ public class Rules {
     private static double score;
     
     /**
-     * Starts the timer until game end.
+     * Starts the countdown until game end.
      */
-    public void startTimer()
+    public void startCountdown()
     {
         
     }
