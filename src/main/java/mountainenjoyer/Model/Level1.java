@@ -9,29 +9,40 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Level1 extends JPanel implements Map, ActionListener, KeyListener {
-
+public class Level1 extends JPanel implements Map, ActionListener, KeyListener
+{
+    
     // Timer for the game loop (updates every 15 ms)
     private Timer timer;
     
-    // The player instance from your Player class.
-    private Player player;
+    // Player properties
+    private int playerX = 50;
+    private int playerY = 500;
+    private final int playerWidth = 30;
+    private final int playerHeight = 50;
+    private int velY = 0;        // vertical velocity (for jumping / gravity)
+    private boolean jumping = false;
     
     // Flags for continuous left/right movement.
     private boolean leftPressed = false;
     private boolean rightPressed = false;
     
+    // Constants for physics and movement.
+    private final int GRAVITY = 1;
+    private final int HORIZONTAL_SPEED = 5;
+    private final int JUMP_STRENGTH = -15;
+    
     // Platforms for the level: these values determine their positions and sizes.
     private Rectangle[] platforms = {
-        new Rectangle(0, 550, 800, 50),    // Ground platform spanning window width.
+        new Rectangle(0, 550, 800, 50),    // Ground platform spanning window width
         new Rectangle(100, 500, 150, 20),
         new Rectangle(350, 400, 200, 20),
         new Rectangle(600, 400, 150, 20)
     };
     
-    // Constructor: set up the timer, instantiate the player, and add the key listener.
-    public Level1() {
-        player = new Player();  // The starting position is defined in Player.reset()
+    // Constructor: sets up the timer and key listener
+    public Level1()
+    {
         timer = new Timer(15, this);
         timer.start();
         setFocusable(true);
@@ -45,7 +56,8 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener {
      * @param mapWidth  Width of the playable area.
      */
     @Override
-    public void drawMap(int mapHeight, int mapWidth) {
+    public void drawMap(int mapHeight, int mapWidth)
+    {
         JFrame gameFrame = new JFrame("Level 1");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(mapWidth, mapHeight);
@@ -53,110 +65,101 @@ public class Level1 extends JPanel implements Map, ActionListener, KeyListener {
         gameFrame.setVisible(true);
     }
     
-    /**
-     * Paints the player and platforms on the panel.
-     */
+    // Paints the player and platforms on the panel.
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g)
+    {
         super.paintComponent(g);
-        // Clear the background.
-        g.setColor(Color.GRAY);
+        // Clear the background
+        g.setColor(Color.WHITE);
         g.fillRect(0, 0, getWidth(), getHeight());
         
-        // Draw the player using the loaded sprite; fall back to a blue rectangle if needed.
-        if (player.getSprite() != null) {
-            g.drawImage(
-                player.getSprite(),
-                (int) player.getX(),
-                (int) player.getY(),
-                player.getWidth(),
-                player.getHeight(),
-                null);
-        } else {
-            g.setColor(Color.BLUE);
-            g.fillRect((int) player.getX(), (int) player.getY(), player.getWidth(), player.getHeight());
-        }
-        
-        // Draw the platforms as red rectangles.
+        // Draw the player as a blue rectangle
         g.setColor(Color.BLUE);
-        for (Rectangle platform : platforms) {
+        g.fillRect(playerX, playerY, playerWidth, playerHeight);
+        
+        // Draw the platforms as red rectangles
+        g.setColor(Color.RED);
+        for (Rectangle platform : platforms)
+        {
             g.fillRect(platform.x, platform.y, platform.width, platform.height);
         }
     }
     
-    /**
-     * Called on each timer tick to update the game state: movement, gravity, and collisions.
-     */
+    // Called on each timer tick to update the game state (movement, gravity, collision)
     @Override
-    public void actionPerformed(ActionEvent e) {
-        // Update horizontal movement based on key flags.
-        if (leftPressed) {
-            player.moveLeft();
-        } else if (rightPressed) {
-            player.moveRight();
-        } else {
-            player.stopMoving();
+    public void actionPerformed(ActionEvent e)
+    {
+        // Update horizontal movement continuously based on key flags.
+        if (leftPressed)
+        {
+            playerX -= HORIZONTAL_SPEED;
+        }
+        if (rightPressed)
+        {
+            playerX += HORIZONTAL_SPEED;
         }
         
-        // Store player's bottom position before updating.
-        double previousBottom = player.getY() + player.getHeight();
-        
-        // Update the player's state (gravity and movement).
-        player.update();
-        
-        // Check collisions with the platforms.
+        // Apply simple gravity and collision detection.
         boolean onPlatform = false;
-        for (Rectangle platform : platforms) {
-            // Check that player's horizontal range overlaps the platform's horizontal range.
-            if (player.getX() + player.getWidth() > platform.x &&
-                player.getX() < platform.x + platform.width) {
-                // Check if the player's bottom has just crossed the platform's top.
-                if (previousBottom <= platform.y && (player.getY() + player.getHeight()) >= platform.y) {
-                    // "Land" the player on the platform.
-                    player.setY(platform.y - player.getHeight());
-                    player.setVelocityY(0);
-                    player.setOnGround(true);
+        Rectangle playerRect = new Rectangle(playerX, playerY, playerWidth, playerHeight);
+        for (Rectangle platform : platforms)
+        {
+            if (playerRect.intersects(platform))
+            {
+                // Check if the collision comes from above (to ensure proper landing)
+                if (playerY + playerHeight - velY <= platform.y)
+                {
+                    playerY = platform.y - playerHeight;
+                    velY = 0;
+                    jumping = false;
                     onPlatform = true;
                 }
             }
         }
-        if (!onPlatform) {
-            player.setOnGround(false);
-        }
         
-        // Redraw the updated game state.
+        // If the player is not on a platform, apply gravity.
+        if (!onPlatform)
+        {
+            velY += GRAVITY;
+        }
+        playerY += velY;
+        
         repaint();
     }
     
-    /**
-     * Handles key pressed events: updating movement flags and triggering a jump.
-     */
+    // When a key is pressed, update the flags accordingly.
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e)
+    {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)
+        {
             leftPressed = true;
         }
-        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
+        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D)
+        {
             rightPressed = true;
         }
-        if (key == KeyEvent.VK_SPACE) {
-            if (player.isOnGround()) {
-                player.jump();
-            }
+        // Jumping: allow a jump if not already in the air.
+        if (key == KeyEvent.VK_SPACE && !jumping)
+        {
+            jumping = true;
+            velY = JUMP_STRENGTH;
         }
     }
     
-    /**
-     * Handles key released events to stop continuous movement.
-     */
+    // When a key is released, update the flags to stop continuous movement.
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent e)
+    {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)
+        {
             leftPressed = false;
         }
-        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
+        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D)
+        {
             rightPressed = false;
         }
     }
