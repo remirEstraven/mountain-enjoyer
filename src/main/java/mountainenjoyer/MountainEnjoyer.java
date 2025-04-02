@@ -3,6 +3,7 @@
  */
 
 package mountainenjoyer;
+import mountainenjoyer.Model.Menu;
 
 /**
  *
@@ -12,5 +13,7 @@ public class MountainEnjoyer {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
+        
+        Menu.showMenu(); // calls the showMenu function in the menu class to.... show the menu
     }
 }
