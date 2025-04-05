@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashSet;
+import mountainenjoyer.model.Player;
 
 public class Game extends JPanel implements ActionListener
 {
@@ -16,15 +17,8 @@ public class Game extends JPanel implements ActionListener
     // Timer for the game loop (updates every 15 ms)
     private Timer timer;
     
-    // Player properties
-    private int playerX = 50;
-    private int playerY = 500;
-    private final int playerWidth = 30;
-    private final int playerHeight = 50;
-    
-    // Constants for physics and movement.
-    private final int GRAVITY = 1;
-    private final int HORIZONTAL_SPEED = 5;
+    // Player
+    Player player = new Player();
     
     // Keyboard Inputs
     KeyboardInputs keyInputs = new KeyboardInputs();
@@ -81,7 +75,8 @@ public class Game extends JPanel implements ActionListener
         
         // Draw the player as a blue rectangle
         g.setColor(Color.BLUE);
-        g.fillRect(playerX, playerY, playerWidth, playerHeight);
+        g.fillRect(player.getPlayerX(), player.getPlayerY(), 
+                   player.getPlayerWidth(), player.getPlayerHeight());
         
         // TODO: Make it so what rectangle array is used here depends on 
         //       which level the player is on
@@ -100,24 +95,28 @@ public class Game extends JPanel implements ActionListener
         // Update horizontal movement continuously based on key flags.
         if (keyInputs.getLeftPressed())
         {
-            playerX -= HORIZONTAL_SPEED;
+            player.moveLeft();
         }
         if (keyInputs.getRightPressed())
         {
-            playerX += HORIZONTAL_SPEED;
+            player.moveRight();
         }
         
         // Apply simple gravity and collision detection.
         boolean onPlatform = false;
-        Rectangle playerRect = new Rectangle(playerX, playerY, playerWidth, playerHeight);
+        Rectangle playerRect = new Rectangle(player.getPlayerX(), 
+                                             player.getPlayerY(), 
+                                             player.getPlayerWidth(), 
+                                             player.getPlayerHeight());
         for (Rectangle platform : platformsLvl1)
         {
             if (playerRect.intersects(platform))
             {
                 // Check if the collision comes from above (to ensure proper landing)
-                if (playerY + playerHeight - keyInputs.getVelY() <= platform.y)
+                if (player.getPlayerY() + player.getPlayerHeight() - 
+                    keyInputs.getVelY() <= platform.y)
                 {
-                    playerY = platform.y - playerHeight;
+                    player.setPlayerY(platform.y - player.getPlayerHeight());
                     keyInputs.setVelY(0);
                     keyInputs.setJumping(false);
                     onPlatform = true;
@@ -126,14 +125,22 @@ public class Game extends JPanel implements ActionListener
             }
         }
         
-        // TODO: Make it so player can't leave side of screen
+        // Make sure player cannot go off the sides of the screen
+        if (player.getPlayerX() < 0)
+        {
+            player.setPlayerX(0);
+        }
+        if (player.getPlayerX() + player.getPlayerWidth() > 800)
+        {
+            player.setPlayerX(800 - player.getPlayerWidth());
+        }
         
         // If the player is not on a platform, apply gravity.
         if (!onPlatform)
         {
-            keyInputs.setVelY(keyInputs.getVelY() + GRAVITY);
+            keyInputs.setVelY(keyInputs.getVelY() + player.GRAVITY);
         }
-        playerY += keyInputs.getVelY();
+        player.setPlayerY(player.getPlayerY() + keyInputs.getVelY());
         
         repaint();
     }

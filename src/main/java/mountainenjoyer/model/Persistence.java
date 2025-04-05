@@ -7,6 +7,7 @@ package mountainenjoyer.model;
 /**
  * Writes users names, high scores, and game progress into a file and retrieves 
  * them when necessary.
+ * Names are 3 characters (numbers or letters).
  */
 public class Persistence {
     // TODO: Implement this LOL!

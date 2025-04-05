@@ -9,5 +9,5 @@ package mountainenjoyer.gui;
  * until the player dies per level.
  */
 public class Countdown {
-    
+    // TODO: Implement this.
 }

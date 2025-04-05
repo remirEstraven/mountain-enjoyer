@@ -17,129 +17,97 @@ package mountainenjoyer.model;
 public class Player {
     
     // Player's position on the screen.
-    private double x, y;
-    // Current velocities along x and y.
-    private double velocityX, velocityY;
-    // True if the player is currently standing on a platform.
-    private boolean onGround;
+    private int playerX = 50;
+    private int playerY = 500;
     
+    // Player properties
+    private final int playerWidth = 30;
+    private final int playerHeight = 50;
+     
     // Constants for physics and movement.
-    private static final double GRAVITY = 0.5;
-    private static final double MOVE_SPEED = 5;
-    private static final double JUMP_STRENGTH = -15;
-
-    // Constructor: initialize the player.
-    public Player()
-    {
-        reset();
-    }
-    
-    /**
-     * Updates the player's position based on its current velocity.
-     */
-    public void move()
-    {
-        x += velocityX;
-        y += velocityY;
-    }
-    
-    /**
-     * Makes the player jump if they are currently on a platform.
-     */
-    public void jump()
-    {
-        if (onGround)
-        {
-            velocityY = JUMP_STRENGTH;  // Negative for upward movement.
-            onGround = false;
-        }
-    }
-    
-    /**
-     * Updates the player's state on each game tick.
-     * Applies gravity if the player is in the air and updates the position.
-     */
-    public void update()
-    {
-        if (!onGround)
-        {
-            velocityY += GRAVITY;
-        }
-        move();
-    }
+    public final int GRAVITY = 1;
+    public final int MOVE_SPEED = 5;
+    public final int JUMP_STRENGTH = -15;
     
     /**
      * Checks if the player has reached the top of the level.
      *
-     * 
      * @return true if the player's y position is above a threshold.
      */
     public boolean hasReachedTop()
     {
-        return y < 50;
+        return playerY < 50;
     }
     
-    /**
-     * Resets the player's position and state to default values at the start of a level.
-     */
-    public void reset()
-    {
-        x = 50;
-        y = 500;
-        velocityX = 0;
-        velocityY = 0;
-        onGround = false;
-    }
-    
-    // --- Helper methods for horizontal movement ---
+    // Helper methods for horizontal movement 
     
     /**
-     * Moves the player to the left by setting the horizontal velocity.
+     * Moves the player to the left by setting the player's x value.
      */
     public void moveLeft()
     {
-        velocityX = -MOVE_SPEED;
+        playerX -= MOVE_SPEED;
     }
     
     /**
-     * Moves the player to the right by setting the horizontal velocity.
+     * Moves the player to the right by setting the player's x value.
      */
     public void moveRight()
     {
-        velocityX = MOVE_SPEED;
+        playerX += MOVE_SPEED;
+    }
+    
+    // Getters and setters for integration with game logic
+    
+    public int getPlayerX()
+    {
+        return playerX;
+    }
+    
+    public int getPlayerY()
+    {
+        return playerY;
     }
     
     /**
-     * Stops horizontal movement by zeroing out the horizontal velocity.
+     * Sets the player's Y value to a value within the bounds of the window.
+     * @param playerY The players vertical position on the screen.
      */
-    public void stopMoving()
+    public void setPlayerY(int playerY)
     {
-        velocityX = 0;
-    }
-    
-    // --- Getters and setters for integration with level logic ---
-    
-    /**
-     * Sets whether the player is on a platform.
-     * Typically, the collision detection in your level code will call this. 
-     * @param onGround true if the player is on a platform.
-     */
-    public void setOnGround(boolean onGround)
-    {
-        this.onGround = onGround;
-        if (onGround)
+        if(playerY >= 0 && playerY <= 600)
         {
-            velocityY = 0;
+            this.playerY = playerY;
+        }
+        else
+        {
+            throw new IllegalArgumentException("PlayerY out of bounds");
         }
     }
     
-    public double getX()
+    /**
+     * Sets the player's X value to a value within the bounds of the window.
+     * @param playerX The players horizontal position on the screen.
+     */
+    public void setPlayerX(int playerX)
     {
-        return x;
+        if(playerX >= 0 && playerX <= 800)
+        {
+            this.playerX = playerX;
+        }
+        else
+        {
+            throw new IllegalArgumentException("PlayerX out of bounds");
+        }
     }
     
-    public double getY()
+    public int getPlayerWidth()
     {
-        return y;
+        return playerWidth;
+    }
+    
+    public int getPlayerHeight()
+    {
+        return playerHeight;
     }
 }
