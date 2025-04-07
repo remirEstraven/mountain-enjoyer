@@ -6,21 +6,26 @@ package mountainenjoyer.gui;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import mountainenjoyer.model.Player;
 
 /**
  * Handles user input for player control in the game and typing name for high
  * score.
  */
 public class KeyboardInputs implements KeyListener {
-
-    private final int JUMP_STRENGTH = -15;
-    private boolean jumping = false;
-    private int velY = 0; // vertical velocity (for jumping / gravity)
+    
+    // Instantiate player
+    Player player = new Player();
     
     // Flags for continuous left/right movement.
     private boolean leftPressed = false;
     private boolean rightPressed = false;
- 
+    
+    // True if the player is jumping
+    private boolean jumping = false;
+    
+    // Vertical velocity (for jumping / gravity)
+    private int velY = 0;
     
     /**
     * When a key is pressed, update the flags for the key accordingly.
@@ -42,7 +47,7 @@ public class KeyboardInputs implements KeyListener {
         if (key == KeyEvent.VK_SPACE && !jumping)
         {
             jumping = true;
-            velY = JUMP_STRENGTH;
+            velY = player.JUMP_STRENGTH;
         }
     }
 
