@@ -11,16 +11,7 @@ package mountainenjoyer.model;
  */
 public class Rules {
     
-    private double timeLimit;
     private static double score;
-    
-    /**
-     * Starts the countdown until game end.
-     */
-    public void startCountdown()
-    {
-        
-    }
     
     /** 
      * Facilitates win/loss conditions of the user at game end.
