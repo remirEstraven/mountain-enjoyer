@@ -73,17 +73,14 @@ public class Player {
      * Sets the player's Y value to a value within the bounds of the window.
      * @param playerY The players vertical position on the screen.
      */
-    public void setPlayerY(int playerY)
-    {
-        if(playerY >= 0 && playerY <= 600)
-        {
-            this.playerY = playerY;
-        }
-        else
-        {
-            throw new IllegalArgumentException("PlayerY out of bounds");
-        }
+    public void setPlayerY(int playerY) {
+    if (playerY > 600) {
+        throw new IllegalArgumentException("PlayerY out of bounds");
+    } else {
+        this.playerY = playerY;
     }
+}
+
     
     /**
      * Sets the player's X value to a value within the bounds of the window.
