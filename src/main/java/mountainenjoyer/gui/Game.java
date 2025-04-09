@@ -5,16 +5,25 @@ import java.awt.*;
 import java.awt.event.*;
 import mountainenjoyer.model.Player;
 
+/**
+ * Game Panel that assembles the map the player plays on.
+ */
 public class Game extends JPanel implements ActionListener 
 {
+    // Layered pane for assembling countdown timer on top of game panel
+    private final JLayeredPane layeredPane = new JLayeredPane();
+    
     // Our game loop timer - it ticks every 15 ms
-    private Timer timer;
+    private final Timer timer;
 
     // The player (our hero) in the game
     Player player = new Player();
 
     // Used to capture keyboard input for movement
     KeyboardInputs keyInputs = new KeyboardInputs();
+    
+    // Used to show the countdown timer until end of game
+    Countdown countdown = new Countdown();
 
     // Level 1 platforms - arranged to create a fun, challenging climb.
     private Rectangle[] platformsLvl1 = 
@@ -109,10 +118,13 @@ public class Game extends JPanel implements ActionListener
         int gameEndX = highestPlatformLvl3.x + (highestPlatformLvl3.width - gameEndWidth) / 2;
         int gameEndY = highestPlatformLvl3.y - gameEndHeight;
         gameEnd = new Rectangle(gameEndX, gameEndY, gameEndWidth, gameEndHeight);
+        
+        // Starts the countdown until end of game
+        countdown.startCountdown();
     }
 
     /**
-     * Displays the game window.
+     * Displays the game window and countdown timer.
      * 
      * @param mapHeight The height of the playing area.
      * @param mapWidth  The width of the playing area.
@@ -122,7 +134,14 @@ public class Game extends JPanel implements ActionListener
         JFrame gameFrame = new JFrame("Game");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(mapWidth, mapHeight);
-        gameFrame.add(this);
+        gameFrame.add(layeredPane);
+        layeredPane.setBounds(0, 0, mapWidth, mapHeight);
+        this.setBounds(0, 0, mapWidth, mapHeight);
+        this.setOpaque(true);
+        countdown.setBounds(0, 0, 100, 50);
+        countdown.setOpaque(true);
+        layeredPane.add(this, JLayeredPane.DEFAULT_LAYER, 0);
+        layeredPane.add(countdown, JLayeredPane.PALETTE_LAYER, 0);
         gameFrame.setVisible(true);
     }
 
@@ -238,6 +257,7 @@ public class Game extends JPanel implements ActionListener
             {
                 System.out.println("Congratulations, you reached the end!");
                 gameEndHit = true;
+                countdown.stopTimer();
                 JOptionPane.showMessageDialog(this, "You Win!", "Game End", JOptionPane.INFORMATION_MESSAGE);
                 Window window = SwingUtilities.getWindowAncestor(this);
                 if (window != null) 
