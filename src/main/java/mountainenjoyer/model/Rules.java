@@ -4,6 +4,9 @@
  */
 package mountainenjoyer.model;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Calculates and manages high score and countdown, and handles 
  * win/loss conditions.
@@ -11,7 +14,53 @@ package mountainenjoyer.model;
  */
 public class Rules {
     
+    public Timer timer;
+    private final int delay = 1000;
+    private final int period = 1000;
+    private int timeLimit;
+    private boolean timerFlag = false;
+    
     private static double score;
+
+    /**
+     * Starts the countdown until game end.
+     */
+    public void startCountdown()
+    {
+        timeLimit = 20;
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        timerCountdown();
+                        timerFlag = true;
+                    }
+                }, delay, period);
+    }
+    
+    private int timerCountdown() 
+    {
+        if (timeLimit == 1) {
+            timer.cancel();
+            gameEnd(false);
+        }
+        timerFlag = false;
+        return --timeLimit;
+    }
+   
+    /**
+     * Returns current time.
+     * @return timeLimit: the time left on the timer.
+     */
+    public int getTime()
+    {
+        return timeLimit;
+    }
+    
+    public boolean getTimerFlag()
+    {
+        return timerFlag;
+    }
     
     /** 
      * Facilitates win/loss conditions of the user at game end.

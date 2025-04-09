@@ -6,8 +6,6 @@ package mountainenjoyer.gui;
 
 import java.awt.Color;
 import mountainenjoyer.model.Rules;
-import java.util.Timer;
-import java.util.TimerTask;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Font;
@@ -22,34 +20,11 @@ public class Countdown extends JPanel {
     
     Font font = new Font("countdown", Font.PLAIN, 36);
     
-    private Timer timer;
-    private final int delay = 1000;
-    private final int period = 1000;
-    private int timeLimit;
-
-    /**
-     * Starts the countdown until game end.
-     */
     public void startCountdown()
     {
-        timeLimit = 20;
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        timerCountdown();
-                        repaint();
-                    }
-                }, delay, period);
-    }
-    
-    private int timerCountdown() 
-    {
-        if (timeLimit == 1) {
-            timer.cancel();
-            rules.gameEnd(false);
-        }
-        return --timeLimit;
+        rules.startCountdown();
+        if(rules.getTimerFlag())
+            repaint();
     }
     
     /**
@@ -57,17 +32,7 @@ public class Countdown extends JPanel {
      */
     public void stopTimer() 
     {
-        timer.cancel();
-    }
-    
-    /**
-     * Returns current time.
-     * Used to get time when timer stops prematurely.
-     * @return timeLimit: the time left on the timer.
-     */
-    public int getTime()
-    {
-        return timeLimit;
+        rules.timer.cancel();
     }
     
     @Override
@@ -80,6 +45,6 @@ public class Countdown extends JPanel {
         
         g.setColor(Color.WHITE);
         g.setFont(font);
-        g.drawString(String.valueOf(timeLimit), 30, 40);
+        g.drawString(String.valueOf(rules.getTime()), 30, 40);
     }
 }
