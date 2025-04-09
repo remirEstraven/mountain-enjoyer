@@ -31,13 +31,12 @@ public class Persistence implements Serializable
     public static int NAME_LENGTH = 3;
     public static String DATA_FILE = "MountainEnjoyerGameData.txt";
     
-    public int highScore;
-    public String playerName;   
+    private int highScore;
+    private String playerName;   
     
-    public int savedScore;  // Score saved to the file
-    public Boolean haveScore;  // Does the player have a score
-    public Boolean haveName;  // Does the player have a name
-    public Boolean isDataSaved;  // Handles whether the data has been saved to the file yet
+    private int savedScore;  // Score saved to the file
+    private Boolean haveScore;  // Does the player have a score
+    private Boolean haveName;  // Does the player have a name
     
     
     public Persistence()  
@@ -47,10 +46,9 @@ public class Persistence implements Serializable
         
         // Initialization of variables
         highScore = 0;
-        playerName = "";
+        playerName = "_ _ _";
         haveScore = false;
         haveName = false;
-        isDataSaved = false;
     }
     
     public int getHighScore()
@@ -58,7 +56,7 @@ public class Persistence implements Serializable
         return highScore;
     }
     
-    public String getUsersName()
+    public String getPlayerName()
     {
         return playerName;
     }
@@ -79,6 +77,11 @@ public class Persistence implements Serializable
             haveScore = true;
             newDataToAdd();            
         }
+        else if(newScore == highScore && !haveScore)  // Case for when new score is 0
+        {
+            haveScore = true;
+            newDataToAdd();
+        }
     }
     
     /**
@@ -95,7 +98,7 @@ public class Persistence implements Serializable
      */
     public void setPlayerName(String nameGiven)
     {
-        if(!haveName || nameGiven.length() == NAME_LENGTH)  // No player associated with current object, and player name is of accepted length
+        if(!haveName && nameGiven.length() == NAME_LENGTH)  // No player associated with current object, and player name is of accepted length
         {
             // Symbol error checking
             Boolean noSymbol = true;
@@ -112,15 +115,17 @@ public class Persistence implements Serializable
             if(noSymbol)
             {
                 playerName = nameGiven;
+                haveName = true;
                 
                 int foundScore = findObject(nameGiven);
                 if(foundScore >= 0)  // Player name has been recorded
                 {
-                    setHighScore(foundScore);
+                    setHighScore(foundScore);  
                 }
-                
-                haveName = true;
-                newDataToAdd();
+                else  // Player has not been recorded
+                {
+                    newDataToAdd();
+                }
             }
         }
     }
@@ -132,42 +137,44 @@ public class Persistence implements Serializable
      * Is called only by the setter methods
      * 
      */
-    public void newDataToAdd()
+    private void newDataToAdd()
     {
-        // If data has not been saved yet, and the object has both a score and a name
-        if(!isDataSaved  && haveScore && haveName)
+        // Having both a score and a name are required to add data to file
+        if(haveScore && haveName)
         {
-            writeObject();
+            // If data has not been saved yet, hence getting the -1
+            if(findObject(playerName) == -1)
+            {
+                writeObject();
+            }
+            // If data has been saved, but the score has changed from the saved score
+            else
+            {
+                changeScore();
+            }
             savedScore = highScore;
-            isDataSaved = true;
         }
-        // If data has been saved, but the score has changed from the saved score
-        else if(isDataSaved && highScore != savedScore)
-        {
-            changeScore();
-            savedScore = highScore;
-        }
-        
     }
     
     /**
      * One of two methods that writes the data to the file <p>
      * This method handles the case of adding new data, so appends the data to the file
      */
-    public void writeObject()
+    private void writeObject()
     {
         try {
             FileWriter gameDataWriter = new FileWriter(DATA_FILE, true);
             
             gameDataWriter.write(playerName);  // Puts player name to file
             
-            System.getProperty("line.separator");  // equivalent to \n and better, aparently
+            gameDataWriter.write("\n"); 
             
             String highScoreString = Integer.toString(highScore);
             gameDataWriter.write(highScoreString);  // Puts player score to file
             
-            System.getProperty("line.separator");
-            System.getProperty("line.separator");
+            gameDataWriter.write("\n\n");
+            
+            gameDataWriter.close();
         }
         catch(IOException e) {}
     }
@@ -178,7 +185,7 @@ public class Persistence implements Serializable
      * This is used when the score is changed
      * 
      */
-    public void changeScore()
+    private void changeScore()
     {
         try
         {
@@ -220,6 +227,7 @@ public class Persistence implements Serializable
     public int findObject(String wantedName)
     {
         int returningScore = -1;  // If no match is found in file
+        Boolean found = false;
         
         try
         {
@@ -227,13 +235,14 @@ public class Persistence implements Serializable
             Scanner gameDataReader = new Scanner(gameData);
             
             // Runs through file, and if character found, returns score
-            while(gameDataReader.hasNextLine())
+            while(gameDataReader.hasNextLine() && !found)
             {
                 String fileData = gameDataReader.nextLine();
                 if(wantedName.equals(fileData))
                 {
                     String foundScore = gameDataReader.nextLine();
-                    returningScore = Integer.parseInt(foundScore);                    
+                    returningScore = Integer.parseInt(foundScore); 
+                    found = true;
                 }
             }
             gameDataReader.close();
