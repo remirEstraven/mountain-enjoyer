@@ -91,8 +91,7 @@ public class Persistence implements Serializable
      * 
      * Error Checking: <ul>
      *  * Player name has not been set yet <br>
-     *  * Name given is 3 characters <br>
-     *  * Name given only includes letter and number characters </ul>
+     *  * Name given is 3 characters </ul>
      * 
      * @param nameGiven 
      */
@@ -100,33 +99,20 @@ public class Persistence implements Serializable
     {
         if(!haveName && nameGiven.length() == NAME_LENGTH)  // No player associated with current object, and player name is of accepted length
         {
-            // Symbol error checking
-            Boolean noSymbol = true;
-            for(int i = 0; i < 3; i++)
+            // Set player name to nameGiven
+            playerName = nameGiven;
+            haveName = true;
+
+            int foundScore = findObject(nameGiven);
+            if(foundScore >= 0)  // Player name has been recorded
             {
-                char c = nameGiven.charAt(i);
-                if(!Character.isLetterOrDigit(c))
-                {
-                    noSymbol = false;
-                }
+                setHighScore(foundScore);  
+            }
+            else  // Player has not been recorded
+            {
+                newDataToAdd();
             }
             
-            // Set player name to nameGiven
-            if(noSymbol)
-            {
-                playerName = nameGiven;
-                haveName = true;
-                
-                int foundScore = findObject(nameGiven);
-                if(foundScore >= 0)  // Player name has been recorded
-                {
-                    setHighScore(foundScore);  
-                }
-                else  // Player has not been recorded
-                {
-                    newDataToAdd();
-                }
-            }
         }
     }
     

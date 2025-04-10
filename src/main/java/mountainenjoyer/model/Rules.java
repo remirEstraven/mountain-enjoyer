@@ -4,9 +4,6 @@
  */
 package mountainenjoyer.model;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
  * Calculates and manages high score and countdown, and handles 
  * win/loss conditions.
@@ -14,80 +11,86 @@ import java.util.TimerTask;
  */
 public class Rules {
     
-    public Timer timer;
-    private final int delay = 1000;
-    private final int period = 1000;
-    private int timeLimit;
-    private boolean timerFlag = false;
+    private int levelCompleted = 0;
+    private static int score = 0;
     
-    private static double score;
-
+    Persistence persistence = new Persistence();
+    
     /**
-     * Starts the countdown until game end.
+     * Saves the high score to be read later.
+     * @param playerName name the score will be attributed to
+     * @return true if the name is three characters, false if not
      */
-    public void startCountdown()
+    public boolean saveHighScore(String playerName) 
     {
-        timeLimit = 20;
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        timerCountdown();
-                        timerFlag = true;
-                    }
-                }, delay, period);
-    }
-    
-    private int timerCountdown() 
-    {
-        if (timeLimit == 1) {
-            timer.cancel();
-            gameEnd(false);
+        boolean goodName;
+        if (playerName.length() == 3)
+        {
+            persistence.setPlayerName(playerName);
+            goodName = true;
         }
-        timerFlag = false;
-        return --timeLimit;
-    }
-   
-    /**
-     * Returns current time.
-     * @return timeLimit: the time left on the timer.
-     */
-    public int getTime()
-    {
-        return timeLimit;
-    }
-    
-    public boolean getTimerFlag()
-    {
-        return timerFlag;
+        else
+        {
+            goodName = false;
+        }
+        return goodName;
     }
     
     /** 
      * Facilitates win/loss conditions of the user at game end.
-     * @param win the success or failure of the user that prompted the game to end.
+     * @param timeLeft the time left when the game ended.
+     * @return the calculated score after setting it to the high score.
      */
-    public void gameEnd(boolean win)
+    public int gameEnd(int timeLeft)
     {
-        
+        calculateScore(timeLeft);
+        persistence.setHighScore(score);
+        return score;
     }
     
     /**
      * Calculates and updates the user's score on game end and after every level.
-     * @param timeTaken the time a player took to complete a level.
-     * @param level the last level the user completed.
+     * @param timeLeft the time left when the game ended.
      */
-    private void calculateScore(double timeTaken, int level)
+    private void calculateScore(int timeLeft)
     {
+        if(levelCompleted == 1)
+        {
+            score += 50;
+        }
+        else if (levelCompleted == 2)
+        {
+            score += 100;
+        }
+        else if (levelCompleted == 3)
+        {
+            score += 150;
+        }
         
+        if (levelCompleted > 3)
+            throw new IllegalArgumentException("Level does not exist.");
+        
+        score += timeLeft;
     }
     
     /**
-     * Gets the user's score.
-     * @return the user's score.
+     * Updates levelCompleted to the level the player has most recently finished.
      */
-    public int getScore()
+    public void updateLevelCompleted()
     {
-        return (int) score;
+        levelCompleted++;
+    }
+    
+    public int getScore() {
+        return score;
+    }
+    
+    /**
+     * Resets the score between games.
+     */
+    public void resetScore()
+    {
+        score = 0;
     }
 }
 
