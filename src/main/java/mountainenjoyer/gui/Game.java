@@ -11,9 +11,6 @@ import mountainenjoyer.model.Rules;
  */
 public class Game extends JPanel implements ActionListener 
 {
-    // Layered pane for assembling countdown timer on top of game panel
-    private final JLayeredPane layeredPane = new JLayeredPane();
-    
     // Our game loop timer - it ticks every 15 ms
     private final Timer timer;
 
@@ -23,9 +20,6 @@ public class Game extends JPanel implements ActionListener
     // Used to capture keyboard input for movement
     KeyboardInputs keyInputs = new KeyboardInputs();
     
-    // Used to show the countdown timer until end of game
-    Countdown countdown = new Countdown();
-    
     // Used to update level
     Rules rules = new Rules();
     
@@ -34,6 +28,9 @@ public class Game extends JPanel implements ActionListener
     
     // Flag for game over
     boolean gameOver = false;
+    
+    // Font for the countdown timer
+    Font countdownFont = new Font("countdown", Font.PLAIN, 35);
 
     // Level 1 platforms - arranged to create a fun, challenging climb.
     private Rectangle[] platformsLvl1 = 
@@ -130,7 +127,11 @@ public class Game extends JPanel implements ActionListener
         gameEnd = new Rectangle(gameEndX, gameEndY, gameEndWidth, gameEndHeight);
         
         // Starts the countdown until end of game
-        countdown.startCountdown();
+        rules.startCountdown();
+        if (rules.getTimerFlag())
+        {
+            repaint();
+        }
     }
 
     /**
@@ -144,14 +145,9 @@ public class Game extends JPanel implements ActionListener
         JFrame gameFrame = new JFrame("Game");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(mapWidth, mapHeight);
-        gameFrame.add(layeredPane);
-        layeredPane.setBounds(0, 0, mapWidth, mapHeight);
+        gameFrame.add(this);
         this.setBounds(0, 0, mapWidth, mapHeight);
         this.setOpaque(true);
-        countdown.setBounds(0, 0, 100, 50);
-        countdown.setOpaque(true);
-        layeredPane.add(this, JLayeredPane.DEFAULT_LAYER, 0);
-        layeredPane.add(countdown, JLayeredPane.PALETTE_LAYER, 0);
         gameFrame.setVisible(true);
     }
 
@@ -193,6 +189,14 @@ public class Game extends JPanel implements ActionListener
             g.setColor(Color.MAGENTA);
             g.fillRect(gameEnd.x, gameEnd.y, gameEnd.width, gameEnd.height);
         }
+        
+        // Paint the countdown timer on the top left of the screen
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, 100, 50);
+        
+        g.setColor(Color.WHITE);
+        g.setFont(countdownFont);
+        g.drawString(String.valueOf(rules.getTime()), 30, 40);
     }
 
     // This method updates the game state. It is called repeatedly by the timer.
@@ -200,16 +204,18 @@ public class Game extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e) 
     {
         // End the game if timer runs out or the player falls off the map
-        if(countdown.getTimerEnd() || player.getPlayerY() > 600)
+        if(rules.getTimerEnd() || player.getPlayerY() > 600)
         {
             if (!gameOver)
             {
-                countdown.stopTimer();
-                player.setPlayerY(550);
-                playerName = JOptionPane.showInputDialog(this, "You Lose! Your score is " + rules.gameEnd(countdown.getTime()) + 
+                rules.stopTimer();
+                repaint(); // repaint one last time to show the 0 on the countdown
+                playerName = JOptionPane.showInputDialog(this, "You Lose! Your score is " + rules.gameEnd(rules.getTime()) + 
                                                              ". Enter a 3 character name.", "Game End", 
                                                              JOptionPane.INFORMATION_MESSAGE);
-                boolean goodName = rules.saveHighScore(playerName);
+                
+                // Make sure the name exists and is 3 chars long
+                boolean goodName = rules.saveHighScore(playerName); 
                 while (!goodName)
                 {
                     playerName = JOptionPane.showInputDialog(this, "Make sure your name is 3 characters!", "Game End", 
@@ -298,9 +304,9 @@ public class Game extends JPanel implements ActionListener
             {
                 System.out.println("Congratulations, you reached the end!");
                 gameEndHit = true;
-                countdown.stopTimer();
+                rules.stopTimer();
                 rules.updateLevelCompleted();
-                playerName = JOptionPane.showInputDialog(this, "You Win! Your score is " + rules.gameEnd(countdown.getTime()) + 
+                playerName = JOptionPane.showInputDialog(this, "You Win! Your score is " + rules.gameEnd(rules.getTime()) + 
                                                          ". Enter a 3 character name.", "Game End", 
                                                          JOptionPane.INFORMATION_MESSAGE);
                 boolean goodName = rules.saveHighScore(playerName);

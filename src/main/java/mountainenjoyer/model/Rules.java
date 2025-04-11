@@ -4,17 +4,98 @@
  */
 package mountainenjoyer.model;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Calculates and manages high score and countdown, and handles 
  * win/loss conditions.
- * @author lucas
  */
 public class Rules {
     
+    // Used for calculating score
     private int levelCompleted = 0;
     private static int score = 0;
     
+    public Timer timer;
+    
+    // Used for the timer. Delay and period are 1 second.
+    private final int delay = 1000;
+    private final int period = 1000;
+    private int timeLimit;
+    
+    // Used to help paint the timer in Game
+    private boolean timerEnd = false;
+    private boolean timerFlag = false;
+    
     Persistence persistence = new Persistence();
+    
+    /**
+     * Starts the countdown until game end.
+     */
+    public void startCountdown()
+    {
+        timeLimit = 20;
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        timerCountdown();
+                        timerFlag = true;
+                        if (timeLimit == 0)
+                        {
+                            timerEnd = true;
+                        }
+                    }
+                }, delay, period);
+    }
+    
+    // Helper method that does the counting down
+    private int timerCountdown() 
+    {
+        if (timeLimit == 1) {
+            timer.cancel();
+        }
+        timerFlag = false;
+        return --timeLimit;
+    }
+    
+    /**
+     * Stops the timer prematurely and resets the timerEnd.
+     */
+    public void stopTimer() 
+    {
+        timer.cancel();
+        timerEnd = false;
+    }
+    
+    /**
+     * Gets the time from the countdown threads timer.
+     * @return the time left on this thread's timer.
+     */
+    public int getTime()
+    {
+        return timeLimit;
+    }
+    
+    /**
+     * Gets the flag for if the countdown has hit its end or not.
+     * @return true if countdown has finished.
+     */
+    public boolean getTimerEnd()
+    {
+        return timerEnd;
+    }
+    
+    /**
+     * Gets the flag for when the timer ticks.
+     * Used to update the timer number on the screen.
+     * @return true when timer needs to be updated.
+     */
+    public boolean getTimerFlag()
+    {
+        return timerFlag;
+    }
     
     /**
      * Saves the high score to be read later.
@@ -24,7 +105,7 @@ public class Rules {
     public boolean saveHighScore(String playerName) 
     {
         boolean goodName;
-        if (playerName.length() == 3)
+        if (playerName != null && playerName.length() == 3)
         {
             persistence.setPlayerName(playerName);
             goodName = true;
@@ -79,10 +160,6 @@ public class Rules {
     public void updateLevelCompleted()
     {
         levelCompleted++;
-    }
-    
-    public int getScore() {
-        return score;
     }
     
     /**
