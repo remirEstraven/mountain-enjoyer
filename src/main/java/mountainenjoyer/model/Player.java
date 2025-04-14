@@ -29,16 +29,6 @@ public class Player {
     public final int MOVE_SPEED = 5;
     public final int JUMP_STRENGTH = -15;
     
-    /**
-     * Checks if the player has reached the top of the level.
-     *
-     * @return true if the player's y position is above a threshold.
-     */
-    public boolean hasReachedTop()
-    {
-        return playerY < 50;
-    }
-    
     // Helper methods for horizontal movement 
     
     /**
@@ -69,17 +59,9 @@ public class Player {
         return playerY;
     }
     
-    /**
-     * Sets the player's Y value to a value within the bounds of the window.
-     * @param playerY The players vertical position on the screen.
-     */
     public void setPlayerY(int playerY) {
-    if (playerY > 600) {
-        throw new IllegalArgumentException("PlayerY out of bounds");
-    } else {
         this.playerY = playerY;
     }
-}
 
     
     /**

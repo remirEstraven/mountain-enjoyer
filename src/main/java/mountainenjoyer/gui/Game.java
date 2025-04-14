@@ -4,15 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import mountainenjoyer.model.Player;
+import mountainenjoyer.model.Rules;
 
 /**
  * Game Panel that assembles the map the player plays on.
  */
 public class Game extends JPanel implements ActionListener 
 {
-    // Layered pane for assembling countdown timer on top of game panel
-    private final JLayeredPane layeredPane = new JLayeredPane();
-    
     // Our game loop timer - it ticks every 15 ms
     private final Timer timer;
 
@@ -22,13 +20,22 @@ public class Game extends JPanel implements ActionListener
     // Used to capture keyboard input for movement
     KeyboardInputs keyInputs = new KeyboardInputs();
     
-    // Used to show the countdown timer until end of game
-    Countdown countdown = new Countdown();
+    // Used to update level
+    Rules rules = new Rules();
+    
+    // Used to set player name
+    String playerName;
+    
+    // Flag for game over
+    boolean gameOver = false;
+    
+    // Font for the countdown timer
+    Font countdownFont = new Font("countdown", Font.PLAIN, 35);
 
     // Level 1 platforms - arranged to create a fun, challenging climb.
     private Rectangle[] platformsLvl1 = 
     {
-        new Rectangle(0, 550, 800, 50),     // This is the ground spanning the full width.
+        new Rectangle(0, 550, 150, 50),     // This is the ground spanning the full width.
         new Rectangle(80, 500, 120, 20),      // Platform 1 
         new Rectangle(250, 450, 150, 20),     // Platform 2
         new Rectangle(450, 400, 120, 20),     // Platform 3
@@ -40,7 +47,7 @@ public class Game extends JPanel implements ActionListener
     // Level 2 platforms - a different layout for variety.
     private Rectangle[] platformsLvl2 = 
     {
-        new Rectangle(0, 550, 800, 50),     // Ground platform stays the same.
+        new Rectangle(0, 550, 150, 50),     // Ground platform stays the same.
         new Rectangle(150, 480, 100, 20),    // Platform 1
         new Rectangle(500, 430, 120, 20),    // Platform 2
         new Rectangle(250, 380, 140, 20),    // Platform 3
@@ -55,7 +62,7 @@ public class Game extends JPanel implements ActionListener
     // Level 3 platforms - another new layout as you approach the end.
     private Rectangle[] platformsLvl3 = 
     {
-        new Rectangle(0, 550, 800, 50),     // Ground platform remains unchanged.
+        new Rectangle(0, 550, 150, 50),     // Ground platform remains unchanged.
         new Rectangle(200, 500, 130, 20),
         new Rectangle(400, 450, 120, 20),
         new Rectangle(100, 400, 100, 20),
@@ -120,28 +127,27 @@ public class Game extends JPanel implements ActionListener
         gameEnd = new Rectangle(gameEndX, gameEndY, gameEndWidth, gameEndHeight);
         
         // Starts the countdown until end of game
-        countdown.startCountdown();
+        rules.startCountdown();
+        if (rules.getTimerFlag())
+        {
+            repaint();
+        }
     }
 
     /**
      * Displays the game window and countdown timer.
      * 
-     * @param mapHeight The height of the playing area.
      * @param mapWidth  The width of the playing area.
+     * @param mapHeight The height of the playing area.
      */
-    public void drawMap(int mapHeight, int mapWidth) 
+    public void drawMap(int mapWidth, int mapHeight) 
     {
         JFrame gameFrame = new JFrame("Game");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(mapWidth, mapHeight);
-        gameFrame.add(layeredPane);
-        layeredPane.setBounds(0, 0, mapWidth, mapHeight);
+        gameFrame.add(this);
         this.setBounds(0, 0, mapWidth, mapHeight);
         this.setOpaque(true);
-        countdown.setBounds(0, 0, 100, 50);
-        countdown.setOpaque(true);
-        layeredPane.add(this, JLayeredPane.DEFAULT_LAYER, 0);
-        layeredPane.add(countdown, JLayeredPane.PALETTE_LAYER, 0);
         gameFrame.setVisible(true);
     }
 
@@ -183,12 +189,51 @@ public class Game extends JPanel implements ActionListener
             g.setColor(Color.MAGENTA);
             g.fillRect(gameEnd.x, gameEnd.y, gameEnd.width, gameEnd.height);
         }
+        
+        // Paint the countdown timer on the top left of the screen
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, 100, 50);
+        
+        g.setColor(Color.WHITE);
+        g.setFont(countdownFont);
+        g.drawString(String.valueOf(rules.getTime()), 30, 40);
     }
 
     // This method updates the game state. It is called repeatedly by the timer.
     @Override
     public void actionPerformed(ActionEvent e) 
     {
+        // End the game if timer runs out or the player falls off the map
+        if(rules.getTimerEnd() || player.getPlayerY() > 600)
+        {
+            if (!gameOver)
+            {
+                rules.stopTimer();
+                repaint(); // repaint one last time to show the 0 on the countdown
+                playerName = JOptionPane.showInputDialog(this, "You Lose! Your score is " + rules.gameEnd(rules.getTime()) + 
+                                                             ". Enter a 3 character name.", "Game End", 
+                                                             JOptionPane.INFORMATION_MESSAGE);
+                
+                // Make sure the name exists and is 3 chars long
+                boolean goodName = rules.saveHighScore(playerName); 
+                while (!goodName)
+                {
+                    playerName = JOptionPane.showInputDialog(this, "Make sure your name is 3 characters!", "Game End", 
+                                                             JOptionPane.INFORMATION_MESSAGE);
+                    goodName = rules.saveHighScore(playerName);
+                }
+                rules.resetScore();
+                Window window = SwingUtilities.getWindowAncestor(this);
+                if (window != null) 
+                {
+                    window.dispose();
+                }
+                Menu.showMenu();
+            }
+            gameOver = true;
+        }
+            
+            
         // Move the player left or right based on keyboard input.
         if (keyInputs.getLeftPressed()) 
         {
@@ -233,6 +278,7 @@ public class Game extends JPanel implements ActionListener
                 player.setPlayerY(500);
                 currentPlatforms = platformsLvl2;
                 currentLevel = 2;
+                rules.updateLevelCompleted();
             }
         }
 
@@ -247,18 +293,30 @@ public class Game extends JPanel implements ActionListener
                 player.setPlayerY(500);
                 currentPlatforms = platformsLvl3;
                 currentLevel = 3;
+                rules.updateLevelCompleted();
             }
         }
 
         // In Level 3, if the player reaches the game-end object, show the win dialog and return to the menu.
         if (currentLevel == 3 && playerRect.intersects(gameEnd)) 
         {
-            if (!gameEndHit) 
+            if (!gameEndHit && !gameOver) 
             {
                 System.out.println("Congratulations, you reached the end!");
                 gameEndHit = true;
-                countdown.stopTimer();
-                JOptionPane.showMessageDialog(this, "You Win!", "Game End", JOptionPane.INFORMATION_MESSAGE);
+                rules.stopTimer();
+                rules.updateLevelCompleted();
+                playerName = JOptionPane.showInputDialog(this, "You Win! Your score is " + rules.gameEnd(rules.getTime()) + 
+                                                         ". Enter a 3 character name.", "Game End", 
+                                                         JOptionPane.INFORMATION_MESSAGE);
+                boolean goodName = rules.saveHighScore(playerName);
+                while (!goodName)
+                {
+                    playerName = JOptionPane.showInputDialog(this, "Make sure your name is 3 characters!", "Game End", 
+                                                             JOptionPane.INFORMATION_MESSAGE);
+                    goodName = rules.saveHighScore(playerName);
+                }
+                rules.resetScore();
                 Window window = SwingUtilities.getWindowAncestor(this);
                 if (window != null) 
                 {
@@ -266,6 +324,7 @@ public class Game extends JPanel implements ActionListener
                 }
                 Menu.showMenu();
             }
+            gameOver = true;
         }
 
         // Prevent the player from moving off the left or right edges.

@@ -70,9 +70,9 @@ public class KeyboardInputs implements KeyListener {
     }
 
     /**
-    * Used for typing in user names for high score.
-    * @param e the event to be processed
-    */
+     * Not used.
+     * @param e 
+     */
     @Override
     public void keyTyped(KeyEvent e) {
 
