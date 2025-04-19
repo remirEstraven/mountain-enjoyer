@@ -5,6 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import mountainenjoyer.model.Persistence;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * Menu class to construct and show the starting menu of the game.
@@ -46,7 +49,28 @@ public class Menu {
         imagePanel.add(imageLabel, BorderLayout.CENTER);
         panel.add(imagePanel, BorderLayout.CENTER);
         
-        // TODO: Show High Score table
+        // Retrieves data from data file
+        Persistence persistence = new Persistence();
+        ArrayList<String[]> scoreInfo = persistence.readScoreInfoSorted();
+
+        String[] column = {"Player", "Score"};
+        DefaultTableModel model = new DefaultTableModel(column, 0);
+        for (String[] row : scoreInfo) 
+        {
+            model.addRow(row);
+        }
+
+        // Makes the high score table
+        JTable highScoreTable = new JTable(model);
+        highScoreTable.setEnabled(false);
+        JScrollPane scrollPane = new JScrollPane(highScoreTable);
+        JPanel highScorePanel = new JPanel(new BorderLayout());
+        highScorePanel.add(scrollPane, BorderLayout.CENTER);
+        highScorePanel.setVisible(false);
+
+        // Places the table east. I couldn't figure out how to have it display
+        // on top of the background image  unfortunately :(
+        panel.add(highScorePanel, BorderLayout.EAST);
 
         // Bottom button panel
         JPanel buttonPanel = new JPanel();
@@ -78,6 +102,18 @@ public class Menu {
             }
         });
         buttonPanel.add(quitButton);
+        
+        // Makes button for high score display
+        JButton toggleScoreButton = new JButton("High Score");
+        toggleScoreButton.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                highScorePanel.setVisible(!highScorePanel.isVisible());
+            }
+        });
+        buttonPanel.add(toggleScoreButton);
         
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }

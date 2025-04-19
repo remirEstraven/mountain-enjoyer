@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 /**
  * Writes users names, high scores, and game progress into a file and retrieves 
@@ -238,6 +239,58 @@ public class Persistence implements Serializable
             returningScore = -1;
         }
         
+        
+        
         return returningScore;
+    }
+    
+    // Reads data from the data file and preps it to be output to table
+    public ArrayList readScoreInfo()
+    {
+        ArrayList scoreInfo = new ArrayList();
+        try
+        {
+            File data = new File(DATA_FILE);
+            Scanner dataScanner = new Scanner(data);
+            
+            while(dataScanner.hasNextLine())
+            {
+                String name = dataScanner.nextLine();
+                
+                if(!dataScanner.hasNextLine())
+                {
+                    break;
+                }
+                
+                String score = dataScanner.nextLine();
+                scoreInfo.add(new String[]{name,score});
+                if (dataScanner.hasNextLine()) 
+                {    
+                    dataScanner.nextLine();
+                }    
+            }
+            dataScanner.close();
+        }
+        catch (FileNotFoundException e) 
+        {
+            System.out.println("error: data missing");
+        }
+        
+        return scoreInfo;
+    }
+    
+    // Sorts data in data file
+    public ArrayList readScoreInfoSorted() 
+    {
+        ArrayList<String[]> scoreInfo = readScoreInfo();
+
+        scoreInfo.sort((user1, user2) -> 
+        {
+            int score1 = Integer.parseInt(user1[1]);
+            int score2 = Integer.parseInt(user2[1]);
+            return Integer.compare(score2, score1);
+        });
+
+        return scoreInfo;
     }
 }
