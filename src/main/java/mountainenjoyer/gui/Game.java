@@ -147,29 +147,29 @@ public class Game extends JPanel implements ActionListener
             repaint();
         }
         
-                // Load player sprite
-        File imagePath = new File("src/main/resources/enjoyer.png");
+        // Load player sprite
+        String pathPrefix = rules.getPathPrefix();
+        File imagePath = new File(pathPrefix + "enjoyer.png");
         ImageIcon imageIcon = new ImageIcon(imagePath.getPath());
         playerImage = imageIcon.getImage().getScaledInstance(30, 50, Image.SCALE_SMOOTH);
         
-        
         // added this to have checkpoints be images
-        File checkpointPath = new File("src/main/resources/bluecheckpoint.png");
+        File checkpointPath = new File(pathPrefix + "bluecheckpoint.png");
         ImageIcon checkpointIcon = new ImageIcon(checkpointPath.getPath());
         // Scale images to match original checkpoint dimensions
-        File gameEndPath = new File("src/main/resources/gameEnd.png");
+        File gameEndPath = new File(pathPrefix + "gameEnd.png");
         ImageIcon gameEndIcon = new ImageIcon(gameEndPath.getPath());
         
         checkpointImage = checkpointIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         gameEndImage = gameEndIcon.getImage().getScaledInstance(30, 40, Image.SCALE_SMOOTH);
         
         // Adding background image
-        File backgroundPath = new File("src/main/resources/background.png");
+        File backgroundPath = new File(pathPrefix + "background.png");
         ImageIcon backgroundIcon = new ImageIcon(backgroundPath.getPath());
         backgroundImage = backgroundIcon.getImage();
         
         // Adding platform 
-        File platformPath = new File("src/main/resources/lessTextured.png");
+        File platformPath = new File(pathPrefix + "lessTextured.png");
         ImageIcon platformIcon = new ImageIcon(platformPath.getPath());
         platformImage = platformIcon.getImage();
     }

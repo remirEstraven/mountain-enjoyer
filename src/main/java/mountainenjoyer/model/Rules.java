@@ -6,6 +6,7 @@ package mountainenjoyer.model;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.io.File;
 
 /**
  * Calculates and manages high score and countdown, and handles 
@@ -168,6 +169,26 @@ public class Rules {
     public void resetScore()
     {
         score = 0;
+    }
+    
+    /**
+     * Determines whether the game is being run in the IDE or JAR file and gets correct prefix for paths.
+     * @return prefix string for a path to an asset.
+     */
+    public String getPathPrefix()
+    {
+        String pathPrefix = "";
+        File test = new File("src/main/resources/mountain.png");
+        if (test.exists())
+        {
+            pathPrefix = "src/main/resources/";
+        }
+        else
+        {
+            pathPrefix = "classes/";
+        }
+        
+        return pathPrefix;
     }
 }
 

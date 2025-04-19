@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import mountainenjoyer.model.Persistence;
+import mountainenjoyer.model.Rules;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -34,6 +35,8 @@ public class Menu {
 
     private static void placeComponents(JPanel panel, final JFrame frame)
     {
+        Rules rules = new Rules();
+        
         // Header label
         JLabel welcomeLabel = new JLabel("Welcome to Mountain Enjoyer!", JLabel.CENTER);
         welcomeLabel.setFont(new Font("Serif", Font.BOLD, 24));
@@ -42,7 +45,8 @@ public class Menu {
         // Center image panel
         JPanel imagePanel = new JPanel();
         imagePanel.setLayout(new BorderLayout());
-        File imagePath = new File("src/main/resources/mountain.png");
+        String pathPrefix = rules.getPathPrefix();
+        File imagePath = new File(pathPrefix + "mountain.png");
         ImageIcon imageIcon = new ImageIcon(imagePath.getPath());
         System.out.println(imagePath.getAbsolutePath());
         JLabel imageLabel = new JLabel(imageIcon);

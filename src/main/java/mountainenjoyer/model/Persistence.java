@@ -17,13 +17,13 @@ import java.util.ArrayList;
 
 /**
  * Writes users names, high scores, and game progress into a file and retrieves 
- * them when necessary. <p>
+ * them when necessary. 
  * 
- * For simplicity: <ul>
- *      1. Name cannot be edited after creation. If this is attempted, it will be ignored. <p>
- *      2. Names are only 3 characters long and can only contain letters and numbers <p>
- *      3. Data will not be saved until both a score and a name are present <p>
- *      4. Player score can only increase from previous scores </ul> 
+ * For simplicity: 
+ *      1. Name cannot be edited after creation. If this is attempted, it will be ignored. 
+ *      2. Names are only 3 characters long and can only contain letters and numbers
+ *      3. Data will not be saved until both a score and a name are present
+ *      4. Player score can only increase from previous scores 
  * 
  * @author colee
  */
@@ -63,9 +63,9 @@ public class Persistence implements Serializable
     }
     
     /**
-     * Sets the new player score <p>
-     * Errors checked for: <ul>
-     *  * Player score can only increase from previous score </ul>
+     * Sets the new player score 
+     * Errors checked for:
+     *  * Player score can only increase from previous score 
      * 
      * @param newScore The new high score that is greater than 0, the default score
      */
@@ -86,13 +86,13 @@ public class Persistence implements Serializable
     }
     
     /**
-     * Sets player's name <p>
+     * Sets player's name 
      * Searches through stored names, and if nameGiven is 
-     * included, also replaces score with recorded score <p>
+     * included, also replaces score with recorded score 
      * 
-     * Error Checking: <ul>
-     *  * Player name has not been set yet <br>
-     *  * Name given is 3 characters </ul>
+     * Error Checking: 
+     *  * Player name has not been set yet 
+     *  * Name given is 3 characters 
      * 
      * @param nameGiven 
      */
@@ -118,9 +118,7 @@ public class Persistence implements Serializable
     }
     
     /**
-     * ( Confusing name, but I couldn't think of what to call it, so I gave 
-     * up and used this ) <p>
-     * Sees if object has both a score and a name, and if so, handles adding data to file <p>
+     * Sees if object has both a score and a name, and if so, handles adding data to file 
      * Is called only by the setter methods
      * 
      */
@@ -144,7 +142,7 @@ public class Persistence implements Serializable
     }
     
     /**
-     * One of two methods that writes the data to the file <p>
+     * One of two methods that writes the data to the file 
      * This method handles the case of adding new data, so appends the data to the file
      */
     private void writeObject()
@@ -167,8 +165,8 @@ public class Persistence implements Serializable
     }
     
     /**
-     * One of two methods that writes the data to the file <p>
-     * This method handles the case of changing existing data <p>
+     * One of two methods that writes the data to the file 
+     * This method handles the case of changing existing data 
      * This is used when the score is changed
      * 
      */
