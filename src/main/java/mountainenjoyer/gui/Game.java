@@ -3,6 +3,7 @@ package mountainenjoyer.gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import mountainenjoyer.model.Player;
 import mountainenjoyer.model.Rules;
 
@@ -90,6 +91,19 @@ public class Game extends JPanel implements ActionListener
     // The game-end object for level 3 (on its highest platform)
     private Rectangle gameEnd;
     private boolean gameEndHit = false;
+    
+    private Image playerImage; // holds the player character image
+
+
+    // I want images not blocks
+    private Image checkpointImage;  // Image for checkpoints
+    private Image gameEndImage;    // Image for game end object
+    
+    private Image backgroundImage;
+    
+    private Image platformImage;
+
+
 
     // Constructor: sets up our timer, listener, and initial interactive items for level 1.
     public Game() 
@@ -107,7 +121,7 @@ public class Game extends JPanel implements ActionListener
         int checkpointHeight = 20;
         Rectangle highestPlatformLvl1 = platformsLvl1[platformsLvl1.length - 1];
         int checkpointX = highestPlatformLvl1.x + (highestPlatformLvl1.width - checkpointWidth) / 2;
-        int checkpointY = highestPlatformLvl1.y - checkpointHeight;
+        int checkpointY = highestPlatformLvl1.y - checkpointHeight - 10;
         checkpoint = new Rectangle(checkpointX, checkpointY, checkpointWidth, checkpointHeight);
 
         // For Level 2, we pre-calculate a checkpoint using the top platform.
@@ -115,7 +129,7 @@ public class Game extends JPanel implements ActionListener
         int checkpoint2Height = 20;
         Rectangle highestPlatformLvl2 = platformsLvl2[platformsLvl2.length - 1];
         int checkpoint2X = highestPlatformLvl2.x + (highestPlatformLvl2.width - checkpoint2Width) / 2;
-        int checkpoint2Y = highestPlatformLvl2.y - checkpoint2Height;
+        int checkpoint2Y = highestPlatformLvl2.y - checkpoint2Height - 10;
         checkpoint2 = new Rectangle(checkpoint2X, checkpoint2Y, checkpoint2Width, checkpoint2Height);
 
         // For Level 3, figure out where to place the game-end object.
@@ -123,7 +137,7 @@ public class Game extends JPanel implements ActionListener
         int gameEndHeight = 20;
         Rectangle highestPlatformLvl3 = platformsLvl3[platformsLvl3.length - 1];
         int gameEndX = highestPlatformLvl3.x + (highestPlatformLvl3.width - gameEndWidth) / 2;
-        int gameEndY = highestPlatformLvl3.y - gameEndHeight;
+        int gameEndY = highestPlatformLvl3.y - gameEndHeight - 24;
         gameEnd = new Rectangle(gameEndX, gameEndY, gameEndWidth, gameEndHeight);
         
         // Starts the countdown until end of game
@@ -132,6 +146,32 @@ public class Game extends JPanel implements ActionListener
         {
             repaint();
         }
+        
+                // Load player sprite
+        File imagePath = new File("src/main/resources/enjoyer.png");
+        ImageIcon imageIcon = new ImageIcon(imagePath.getPath());
+        playerImage = imageIcon.getImage().getScaledInstance(30, 50, Image.SCALE_SMOOTH);
+        
+        
+        // added this to have checkpoints be images
+        File checkpointPath = new File("src/main/resources/bluecheckpoint.png");
+        ImageIcon checkpointIcon = new ImageIcon(checkpointPath.getPath());
+        // Scale images to match original checkpoint dimensions
+        File gameEndPath = new File("src/main/resources/gameEnd.png");
+        ImageIcon gameEndIcon = new ImageIcon(gameEndPath.getPath());
+        
+        checkpointImage = checkpointIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        gameEndImage = gameEndIcon.getImage().getScaledInstance(30, 40, Image.SCALE_SMOOTH);
+        
+        // Adding background image
+        File backgroundPath = new File("src/main/resources/background.png");
+        ImageIcon backgroundIcon = new ImageIcon(backgroundPath.getPath());
+        backgroundImage = backgroundIcon.getImage();
+        
+        // Adding platform 
+        File platformPath = new File("src/main/resources/lessTextured.png");
+        ImageIcon platformIcon = new ImageIcon(platformPath.getPath());
+        platformImage = platformIcon.getImage();
     }
 
     /**
@@ -156,38 +196,41 @@ public class Game extends JPanel implements ActionListener
     protected void paintComponent(Graphics g) 
     {
         super.paintComponent(g);
+        
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
 
         // Paint a white background to clear the previous frame.
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, getWidth(), getHeight());
+//        g.setColor(Color.GRAY);
+//        g.fillRect(0, 0, getWidth(), getHeight());
+        
+        g.drawImage(playerImage, player.getPlayerX(), player.getPlayerY(), null);
 
         // Draw the player (our blue hero).
-        g.setColor(Color.BLUE);
-        g.fillRect(player.getPlayerX(), player.getPlayerY(),
-                   player.getPlayerWidth(), player.getPlayerHeight());
+       // g.setColor(Color.BLUE);
+       // g.fillRect(player.getPlayerX(), player.getPlayerY(),
+        //           player.getPlayerWidth(), player.getPlayerHeight());
 
         // Draw all of the current platforms in red.
-        g.setColor(Color.RED);
+        g.setColor(Color.BLACK);
         for (Rectangle platform : currentPlatforms) 
         {
-            g.fillRect(platform.x, platform.y, platform.width, platform.height);
+            //g.fillRect(platform.x, platform.y, platform.width, platform.height);
+            g.drawImage(platformImage, platform.x, platform.y -10, platform.width, platform.height + 10, null);
+
         }
 
         // Draw the interactive object for the current level.
         if (currentLevel == 1) 
         {
-            g.setColor(Color.GREEN);
-            g.fillRect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height);
+            g.drawImage(checkpointImage, checkpoint.x, checkpoint.y, null);
         } 
         else if (currentLevel == 2) 
         {
-            g.setColor(Color.GREEN);
-            g.fillRect(checkpoint2.x, checkpoint2.y, checkpoint2.width, checkpoint2.height);
+            g.drawImage(checkpointImage, checkpoint2.x, checkpoint2.y, null);
         } 
         else if (currentLevel == 3) 
         {
-            g.setColor(Color.MAGENTA);
-            g.fillRect(gameEnd.x, gameEnd.y, gameEnd.width, gameEnd.height);
+            g.drawImage(gameEndImage, gameEnd.x, gameEnd.y, null);
         }
         
         // Paint the countdown timer on the top left of the screen
