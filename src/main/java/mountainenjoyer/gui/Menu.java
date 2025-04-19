@@ -86,7 +86,7 @@ public class Menu {
                 frame.dispose();  // Close the menu.
                 Game level = new Game();
                 // You can adjust the size of the playable area (width, height) as desired.
-                level.drawMap(800, 600);
+                level.drawMap(800, 615);
             }
         });
         buttonPanel.add(playButton);
